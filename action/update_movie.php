@@ -1,26 +1,59 @@
 <?php
-
-$movie_id = $_POST["movie_id"];
-$title = $_POST["title"];
-$release_year = $_POST["release_year"];
-$duration_min = $_POST["duration_min"];
-$genre_id = $_POST["genre_id"];
-
-include "connect.php";
-
-$sql = "UPDATE `movies` 
-SET 
-`movie_id`='[value-1]',
-`title`='[value-2]',
-`release_year`='[value-3]',
-`duration_min`='[value-4]',
-`genre_id`='[value-5]' WHERE 1 ";
-
-$result = mysqli_query($con, $sql);
-
-if(!$result){
-    echo "Error";
-}else{
-    header("Location: ../manage_menu.php");
+session_start();
+if (!isset($_SESSION["username"])) {
+    header("location: login.php");
     exit;
 }
+
+include "action/connect.php";
+
+if (!isset($_GET['id'])) {
+    die("ไม่พบ id ที่ต้องการแก้ไข");
+}
+
+$id = $_GET['id'];
+
+$sql = "SELECT `movie_id`, `title`, `release_year`, `duration_min`, `genre_id` 
+        FROM `movies` 
+        WHERE `movie_id` = ?";
+$stmt = mysqli_prepare($con, $sql);
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$movie = mysqli_fetch_assoc($result);
+
+if (!$movie) {
+    die("ไม่พบข้อมูลหนัง");
+}
+?>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>แก้ไขข้อมูลหนัง</title>
+</head>
+<body>
+
+    <a href="../index.php">&laquo; กลับหน้ารายการหนัง</a>
+    <h2>แก้ไขข้อมูลหนัง</h2>
+
+    <form action="action/update_movie.php" method="post">
+        <input type="hidden" name="movie_id" value="<?= $movie['movie_id'] ?>">
+
+        <label>ชื่อเรื่อง</label>
+        <input type="text" name="title" value="<?= htmlspecialchars($movie['title']) ?>" required><br>
+
+        <label>ปีที่ฉาย</label>
+        <input type="number" name="release_year" value="<?= $movie['release_year'] ?>" required><br>
+
+        <label>ความยาว (นาที)</label>
+        <input type="number" name="duration_min" value="<?= $movie['duration_min'] ?>" required><br>
+
+        <label>หมวดหมู่ (genre_id)</label>
+        <input type="number" name="genre_id" value="<?= $movie['genre_id'] ?>" required><br>
+
+        <button type="submit">บันทึกการแก้ไข</button>
+    </form>
+
+</body>
+</html>

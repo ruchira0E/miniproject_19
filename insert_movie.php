@@ -1,26 +1,8 @@
 <?php
 session_start();
-include "action/connect.php";
-
-$error = "";
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-
-    $sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-    $stmt = mysqli_prepare($con, $sql);
-    mysqli_stmt_bind_param($stmt, "ss", $username, $password);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-
-    if (mysqli_num_rows($result) > 0) {
-        $_SESSION['username'] = $username;
-        header("Location: index.php");
-        exit();
-    } else {
-        $error = "Username หรือ Password ไม่ถูกต้อง!";
-    }
+if (!isset($_SESSION["username"])) {
+    header("location: login.php");
+    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -28,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เข้าสู่ระบบ - Movie Catalog</title>
+    <title>เพิ่มข้อมูลหนัง</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
 
@@ -52,62 +34,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: #f5f5f1;
         }
 
-        .login-card {
+        .form-card {
             background: rgba(18, 18, 22, 0.75);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-top: 1px solid rgba(229, 9, 20, 0.5);
             border-radius: 20px;
-            padding: 40px 32px;
+            padding: 36px 32px;
             width: 100%;
-            max-width: 400px;
+            max-width: 440px;
             box-shadow: 
                 0 20px 40px rgba(0, 0, 0, 0.6),
                 0 0 40px rgba(229, 9, 20, 0.12);
+            position: relative;
+            transition: transform 0.3s ease;
         }
 
-        .brand-header {
-            text-align: center;
-            margin-bottom: 28px;
+        .back-link {
+            color: #a0a0ab;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 24px;
+            transition: all 0.25s ease;
         }
 
-        .brand-header h2 {
-            font-size: 26px;
-            font-weight: 700;
+        .back-link:hover {
+            color: #e50914;
+            transform: translateX(-4px);
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
             color: #ffffff;
-            letter-spacing: 0.5px;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 10px;
+            letter-spacing: 0.5px;
         }
 
-        .brand-header h2::before {
+        h2::before {
             content: '';
             display: inline-block;
             width: 4px;
-            height: 24px;
+            height: 22px;
             background: #e50914;
             border-radius: 4px;
             box-shadow: 0 0 10px #e50914;
-        }
-
-        .brand-header p {
-            font-size: 13px;
-            color: #a0a0ab;
-            margin-top: 4px;
-        }
-
-        .alert-error {
-            background: rgba(229, 9, 20, 0.15);
-            border: 1px solid rgba(229, 9, 20, 0.4);
-            color: #ff4d4d;
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 13px;
-            margin-bottom: 20px;
-            text-align: center;
         }
 
         .input-group {
@@ -124,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         input[type="text"],
-        input[type="password"] {
+        input[type="number"] {
             width: 100%;
             padding: 13px 16px;
             background: rgba(10, 10, 14, 0.6);
@@ -137,12 +116,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         input[type="text"]::placeholder,
-        input[type="password"]::placeholder {
+        input[type="number"]::placeholder {
             color: #555560;
         }
 
         input[type="text"]:focus,
-        input[type="password"]:focus {
+        input[type="number"]:focus {
             background: rgba(15, 15, 20, 0.9);
             border-color: #e50914;
             box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
@@ -177,32 +156,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-    <div class="login-card">
-        <div class="brand-header">
-            <h2>Movie Catalog</h2>
-            <p>กรุณาเข้าสู่ระบบเพื่อจัดการข้อมูลภาพยนตร์</p>
+    <form class="form-card" action="action/insert_movie.php" method="post">
+        <a href="index.php" class="back-link">&#8592; กลับหน้ารายการหนัง</a>
+        <h2>เพิ่มข้อมูลหนัง</h2>
+
+        <div class="input-group">
+            <label for="title">ชื่อเรื่อง</label>
+            <input type="text" id="title" name="title" placeholder="เช่น Inception, Avatar" required>
         </div>
 
-        <?php if (!empty($error)) { ?>
-            <div class="alert-error">
-                <?= htmlspecialchars($error) ?>
-            </div>
-        <?php } ?>
+        <div class="input-group">
+            <label for="release_year">ปีที่ฉาย (ค.ศ.)</label>
+            <input type="number" id="release_year" name="release_year" placeholder="เช่น 2024" min="1888" max="2100" required>
+        </div>
 
-        <form action="" method="post">
-            <div class="input-group">
-                <label for="username">ชื่อผู้ใช้ (Username)</label>
-                <input type="text" id="username" name="username" placeholder="ระบุ Username" required autocomplete="off">
-            </div>
+        <div class="input-group">
+            <label for="duration_min">ความยาว (นาที)</label>
+            <input type="number" id="duration_min" name="duration_min" placeholder="เช่น 120" min="1" required>
+        </div>
 
-            <div class="input-group">
-                <label for="password">รหัสผ่าน (Password)</label>
-                <input type="password" id="password" name="password" placeholder="ระบุ Password" required>
-            </div>
+        <div class="input-group">
+            <label for="genre_id">รหัสหมวดหมู่ (Genre ID)</label>
+            <input type="number" id="genre_id" name="genre_id" placeholder="ระบุตัวเลข ID หมวดหมู่" min="1" required>
+        </div>
 
-            <button type="submit">เข้าสู่ระบบ</button>
-        </form>
-    </div>
+        <button type="submit">บันทึกข้อมูล</button>
+    </form>
 
 </body>
 </html>

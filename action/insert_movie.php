@@ -15,6 +15,6 @@ $result = mysqli_stmt_execute($stmt);
 if (!$result) {
     echo "Error";
 } else {
-    header("Location: ../index.php"); // เช็คชื่อไฟล์ปลายทางด้วยนะ (ดูข้อ 4 ที่แล้ว)
+    header("Location: ../index.php"); 
     exit;
 }
