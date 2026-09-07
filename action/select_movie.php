@@ -1,0 +1,1 @@
+$sql = "SELECT `movie_id`, `title`, `release_year`, `duration_min`, `genre_id` FROM `movies` WHERE 1 ';'
