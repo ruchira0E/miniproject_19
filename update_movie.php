@@ -13,7 +13,10 @@ if (!isset($_GET['id'])) {
 
 $id = $_GET['id'];
 
-$sql = "SELECT `movie_id`, `title`, `release_year`, `duration_min`, `genre_id` 
+session_start();
+if (!isset($_SESSION["username"]))
+    
+$sql = "SELECT `movie_id`, `title`, `release_year`, `duration_min`, `genre_id`, `cover_image` 
         FROM `movies` 
         WHERE `movie_id` = ?";
 $stmt = mysqli_prepare($con, $sql);
@@ -34,11 +37,12 @@ if (!$movie) {
 </head>
 <body>
 
-    <a href="../index.php">&laquo; กลับหน้ารายการหนัง</a>
+    <a href="index.php">&laquo; กลับหน้ารายการหนัง</a>
     <h2>แก้ไขข้อมูลหนัง</h2>
 
-    <form action="action/update_movie.php" method="post">
+    <form action="action/update_movie.php" method="post" enctype="multipart/form-data">
         <input type="hidden" name="movie_id" value="<?= $movie['movie_id'] ?>">
+        <input type="hidden" name="old_cover_image" value="<?= htmlspecialchars($movie['cover_image'] ?? '') ?>">
 
         <label>ชื่อเรื่อง</label>
         <input type="text" name="title" value="<?= htmlspecialchars($movie['title']) ?>" required><br>
@@ -51,6 +55,16 @@ if (!$movie) {
 
         <label>หมวดหมู่ (genre_id)</label>
         <input type="number" name="genre_id" value="<?= $movie['genre_id'] ?>" required><br>
+
+        <label>รูปปกปัจจุบัน</label><br>
+        <?php if (!empty($movie['cover_image'])) { ?>
+            <img src="uploads/<?= htmlspecialchars($movie['cover_image']) ?>" width="150"><br>
+        <?php } else { ?>
+            (ยังไม่มีรูป)<br>
+        <?php } ?>
+
+        <label>เปลี่ยนรูปปก (ถ้าไม่เลือก จะใช้รูปเดิม)</label>
+        <input type="file" name="cover_image" accept="image/*"><br>
 
         <button type="submit">บันทึกการแก้ไข</button>
     </form>

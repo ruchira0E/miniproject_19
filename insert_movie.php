@@ -103,7 +103,8 @@ if (!isset($_SESSION["username"])) {
         }
 
         input[type="text"],
-        input[type="number"] {
+        input[type="number"],
+        input[type="file"] {
             width: 100%;
             padding: 13px 16px;
             background: rgba(10, 10, 14, 0.6);
@@ -115,13 +116,31 @@ if (!isset($_SESSION["username"])) {
             transition: all 0.25s ease;
         }
 
+        /* ตกแต่งปุ่มเลือกไฟล์ */
+        input[type="file"]::-webkit-file-upload-button {
+            background: #e50914;
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-family: 'Kanit', sans-serif;
+            transition: background 0.2s ease;
+        }
+
+        input[type="file"]::-webkit-file-upload-button:hover {
+            background: #b81d24;
+        }
+
         input[type="text"]::placeholder,
         input[type="number"]::placeholder {
             color: #555560;
         }
 
         input[type="text"]:focus,
-        input[type="number"]:focus {
+        input[type="number"]:focus,
+        input[type="file"]:focus {
             background: rgba(15, 15, 20, 0.9);
             border-color: #e50914;
             box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
@@ -156,28 +175,35 @@ if (!isset($_SESSION["username"])) {
 </head>
 <body>
 
-    <form class="form-card" action="action/insert_movie.php" method="post">
+    <!-- เพิ่ม enctype="multipart/form-data" เพื่อให้รองรับไฟล์รูปภาพ -->
+    <form class="form-card" action="action/insert_movie.php" method="post" enctype="multipart/form-data">
         <a href="index.php" class="back-link">&#8592; กลับหน้ารายการหนัง</a>
         <h2>เพิ่มข้อมูลหนัง</h2>
 
         <div class="input-group">
             <label for="title">ชื่อเรื่อง</label>
-            <input type="text" id="title" name="title" placeholder="เช่น Inception, Avatar" required>
+            <input type="text" id="title" name="title" placeholder="" required>
         </div>
 
         <div class="input-group">
             <label for="release_year">ปีที่ฉาย (ค.ศ.)</label>
-            <input type="number" id="release_year" name="release_year" placeholder="เช่น 2024" min="1888" max="2100" required>
+            <input type="number" id="release_year" name="release_year" placeholder="" min="1888" max="2100" required>
         </div>
 
         <div class="input-group">
             <label for="duration_min">ความยาว (นาที)</label>
-            <input type="number" id="duration_min" name="duration_min" placeholder="เช่น 120" min="1" required>
+            <input type="number" id="duration_min" name="duration_min" placeholder="" min="1" required>
         </div>
 
         <div class="input-group">
-            <label for="genre_id">รหัสหมวดหมู่ (Genre ID)</label>
-            <input type="number" id="genre_id" name="genre_id" placeholder="ระบุตัวเลข ID หมวดหมู่" min="1" required>
+            <label for="genre_id">รหัสหมวดหมู่ (ID)</label>
+            <input type="number" id="genre_id" name="genre_id" placeholder="" min="1" required>
+        </div>
+
+
+        <div class="input-group">
+            <label for="cover_image">รูปปกภาพยนตร์ (URL)</label>
+            <input type="text" id="cover_image" name="cover_image" placeholder="">
         </div>
 
         <button type="submit">บันทึกข้อมูล</button>

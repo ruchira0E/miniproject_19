@@ -7,7 +7,8 @@ if (!isset($_SESSION["username"])) {
 
 include "action/connect.php";
 
-$sql = "SELECT movies.movie_id, movies.title, movies.release_year, movies.duration_min, genres.genre_name 
+// ดึง cover_image มาเพิ่มด้วย
+$sql = "SELECT movies.movie_id, movies.title, movies.release_year, movies.duration_min, movies.cover_image, genres.genre_name 
         FROM movies 
         LEFT JOIN genres ON movies.genre_id = genres.genre_id";
 $result = mysqli_query($con, $sql);
@@ -43,7 +44,7 @@ $result = mysqli_query($con, $sql);
 
         .container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1050px;
             background: rgba(18, 18, 22, 0.75);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -155,6 +156,7 @@ $result = mysqli_query($con, $sql);
 
         th, td {
             padding: 14px 16px;
+            vertical-align: middle;
         }
 
         th {
@@ -177,6 +179,17 @@ $result = mysqli_query($con, $sql);
 
         tr:hover td {
             background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* ตกแต่งแสดงผลรูปภาพปกหนัง */
+        .movie-poster {
+            width: 50px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: #121216;
+            display: block;
         }
 
         .badge {
@@ -240,10 +253,11 @@ $result = mysqli_query($con, $sql);
                 <thead>
                     <tr>
                         <th width="8%">รหัส</th>
-                        <th width="35%">ชื่อเรื่อง</th>
-                        <th width="15%">ปีที่ฉาย</th>
+                        <th width="10%">รูปปก</th>
+                        <th width="30%">ชื่อเรื่อง</th>
+                        <th width="12%">ปีที่ฉาย</th>
                         <th width="15%">ความยาว</th>
-                        <th width="15%">หมวดหมู่</th>
+                        <th width="13%">หมวดหมู่</th>
                         <th width="12%">จัดการ</th>
                     </tr>
                 </thead>
@@ -251,6 +265,13 @@ $result = mysqli_query($con, $sql);
                     <?php while ($row = mysqli_fetch_assoc($result)) { ?>
                         <tr>
                             <td>#<?= $row['movie_id'] ?></td>
+                            <td>
+                                <?php if (!empty($row['cover_image'])) { ?>
+                                    <img src="<?= htmlspecialchars($row['cover_image']) ?>" class="movie-poster" alt="Poster" onerror="this.src='https://via.placeholder.com/50x70/1a1a20/888888?text=No+Img';">
+                                <?php } else { ?>
+                                    <img src="https://via.placeholder.com/50x70/1a1a20/888888?text=No+Img" class="movie-poster" alt="No Cover">
+                                <?php } ?>
+                            </td>
                             <td><strong><?= htmlspecialchars($row['title']) ?></strong></td>
                             <td><?= $row['release_year'] ?></td>
                             <td><?= $row['duration_min'] ?> นาที</td>
@@ -261,7 +282,7 @@ $result = mysqli_query($con, $sql);
                             </td>
                             <td>
                                 <div class="action-links">
-                                    <a href="action/update_movie.php?id=<?= $row['movie_id'] ?>" class="btn-edit">แก้ไข</a>
+                                    <a href="update_movie.php?id=<?= $row['movie_id'] ?>">แก้ไข</a>
                                     <a href="action/delete_movie.php?id=<?= $row['movie_id'] ?>" class="btn-delete" onclick="return confirm('ยืนยันการลบภาพยนตร์เรื่องนี้?');">ลบ</a>
                                 </div>
                             </td>

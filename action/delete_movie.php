@@ -19,6 +19,6 @@ mysqli_stmt_execute($stmt);
 if (mysqli_stmt_affected_rows($stmt) === 0) {
     echo "Error หรือไม่พบข้อมูลที่จะลบ";
 } else {
-    header("Location: ../manage_menu.php");
+    header("Location: ../index.php");
     exit;
 }
