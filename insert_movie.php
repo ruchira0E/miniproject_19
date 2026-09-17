@@ -4,6 +4,12 @@ if (!isset($_SESSION["username"])) {
     header("location: login.php");
     exit;
 }
+
+include "action/connect.php";
+
+$genre_sql = "SELECT `genre_id`, `genre_name` FROM `genres`";
+$genre_result = mysqli_query($con, $genre_sql);
+
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -104,7 +110,7 @@ if (!isset($_SESSION["username"])) {
 
         input[type="text"],
         input[type="number"],
-        input[type="file"] {
+        select {
             width: 100%;
             padding: 13px 16px;
             background: rgba(10, 10, 14, 0.6);
@@ -116,21 +122,22 @@ if (!isset($_SESSION["username"])) {
             transition: all 0.25s ease;
         }
 
-        /* ตกแต่งปุ่มเลือกไฟล์ */
-        input[type="file"]::-webkit-file-upload-button {
-            background: #e50914;
-            color: #ffffff;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
+        /* ตกแต่ง Dropdown / Select */
+        select {
             cursor: pointer;
-            margin-right: 10px;
-            font-family: 'Kanit', sans-serif;
-            transition: background 0.2s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a0a0ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
         }
 
-        input[type="file"]::-webkit-file-upload-button:hover {
-            background: #b81d24;
+        select option {
+            background-color: #121216;
+            color: #ffffff;
+            padding: 10px;
         }
 
         input[type="text"]::placeholder,
@@ -140,8 +147,8 @@ if (!isset($_SESSION["username"])) {
 
         input[type="text"]:focus,
         input[type="number"]:focus,
-        input[type="file"]:focus {
-            background: rgba(15, 15, 20, 0.9);
+        select:focus {
+            background-color: rgba(15, 15, 20, 0.9);
             border-color: #e50914;
             box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
         }
@@ -175,8 +182,7 @@ if (!isset($_SESSION["username"])) {
 </head>
 <body>
 
-    <!-- เพิ่ม enctype="multipart/form-data" เพื่อให้รองรับไฟล์รูปภาพ -->
-    <form class="form-card" action="action/insert_movie.php" method="post" enctype="multipart/form-data">
+    <form class="form-card" action="action/insert_movie.php" method="post">
         <a href="index.php" class="back-link">&#8592; กลับหน้ารายการหนัง</a>
         <h2>เพิ่มข้อมูลหนัง</h2>
 
@@ -196,10 +202,14 @@ if (!isset($_SESSION["username"])) {
         </div>
 
         <div class="input-group">
-            <label for="genre_id">รหัสหมวดหมู่ (ID)</label>
-            <input type="number" id="genre_id" name="genre_id" placeholder="" min="1" required>
+            <label for="genre_id">หมวดหมู่</label>
+            <select id="genre_id" name="genre_id" required>
+                <option value="">เลือกหมวดหมู่</option>
+                <?php while ($genre = mysqli_fetch_assoc($genre_result)) { ?>
+                    <option value="<?= $genre['genre_id'] ?>"><?= htmlspecialchars($genre['genre_name']) ?></option>
+                <?php } ?>
+            </select>
         </div>
-
 
         <div class="input-group">
             <label for="cover_image">รูปปกภาพยนตร์ (URL)</label>
