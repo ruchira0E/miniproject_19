@@ -35,11 +35,73 @@ $result = mysqli_query($con, $sql);
                 radial-gradient(circle at 15% 15%, rgba(229, 9, 20, 0.15) 0%, transparent 45%),
                 radial-gradient(circle at 85% 85%, rgba(184, 29, 36, 0.1) 0%, transparent 40%);
             min-height: 100vh;
-            padding: 40px 20px;
             color: #f5f5f1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar Style */
+        .navbar {
+            width: 100%;
+            background: rgba(18, 18, 22, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .navbar-brand span {
+            color: #e50914;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #c0c0c8;
+        }
+
+        .navbar-user strong {
+            color: #ffffff;
+        }
+
+        .btn-logout {
+            color: #a0a0ab;
+            text-decoration: none;
+            font-size: 13px;
+            padding: 6px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            transition: all 0.25s ease;
+        }
+
+        .btn-logout:hover {
+            color: #e50914;
+            border-color: #e50914;
+            background: rgba(229, 9, 20, 0.1);
+        }
+
+        /* Main Content Style */
+        .main-content {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: flex-start;
+            padding: 40px 20px;
         }
 
         .container {
@@ -55,42 +117,6 @@ $result = mysqli_query($con, $sql);
             box-shadow: 
                 0 20px 40px rgba(0, 0, 0, 0.6),
                 0 0 40px rgba(229, 9, 20, 0.12);
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .user-info {
-            font-size: 15px;
-            color: #c0c0c8;
-        }
-
-        .user-info span {
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        .btn-logout {
-            color: #a0a0ab;
-            text-decoration: none;
-            font-size: 13px;
-            padding: 6px 12px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 6px;
-            transition: all 0.25s ease;
-            margin-left: 10px;
-        }
-
-        .btn-logout:hover {
-            color: #e50914;
-            border-color: #e50914;
-            background: rgba(229, 9, 20, 0.1);
         }
 
         .actions {
@@ -181,7 +207,6 @@ $result = mysqli_query($con, $sql);
             background: rgba(255, 255, 255, 0.02);
         }
 
-        /* ตกแต่งแสดงผลรูปภาพปกหนัง */
         .movie-poster {
             width: 50px;
             height: 70px;
@@ -231,67 +256,94 @@ $result = mysqli_query($con, $sql);
             color: #ff8080;
             text-decoration: underline;
         }
+
+        /* Footer Style */
+        .footer {
+            width: 100%;
+            background: rgba(12, 12, 15, 0.85);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #888890;
+        }
+
+        .footer p span {
+            color: #e50914;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="header">
-            <div class="user-info">
-                สวัสดีคุณ <span><?= htmlspecialchars($_SESSION["username"]) ?></span>
-            </div>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            MOVIE<span>CATALOG</span>
+        </div>
+        <div class="navbar-user">
+            <span>ผู้ใช้งาน: <strong><?= htmlspecialchars($_SESSION["username"]) ?></strong></span>
             <a href="logout.php" class="btn-logout">ออกจากระบบ</a>
         </div>
+    </nav>
 
-        <div class="actions">
-            <h2>รายการภาพยนตร์</h2>
-            <a href="insert_movie.php" class="btn-add">+ เพิ่มข้อมูลหนัง</a>
-        </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="actions">
+                <h2>รายการภาพยนตร์</h2>
+                <a href="insert_movie.php" class="btn-add">+ เพิ่มข้อมูลหนัง</a>
+            </div>
 
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th width="8%">รหัส</th>
-                        <th width="10%">รูปปก</th>
-                        <th width="30%">ชื่อเรื่อง</th>
-                        <th width="12%">ปีที่ฉาย</th>
-                        <th width="15%">ความยาว</th>
-                        <th width="13%">หมวดหมู่</th>
-                        <th width="12%">จัดการ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+            <div class="table-responsive">
+                <table>
+                    <thead>
                         <tr>
-                            <td>#<?= $row['movie_id'] ?></td>
-                            <td>
-                                <?php if (!empty($row['cover_image'])) { ?>
-                                    <img src="<?= htmlspecialchars($row['cover_image']) ?>" class="movie-poster" alt="Poster" onerror="this.src='https://via.placeholder.com/50x70/1a1a20/888888?text=No+Img';">
-                                <?php } else { ?>
-                                    <img src="https://via.placeholder.com/50x70/1a1a20/888888?text=No+Img" class="movie-poster" alt="No Cover">
-                                <?php } ?>
-                            </td>
-                            <td><strong><?= htmlspecialchars($row['title']) ?></strong></td>
-                            <td><?= $row['release_year'] ?></td>
-                            <td><?= $row['duration_min'] ?> นาที</td>
-                            <td>
-                                <span class="badge">
-                                    <?= htmlspecialchars($row['genre_name'] ?? 'ไม่ระบุ') ?>
-                                </span>
-                            </td>
-                            <td>
-                                <div class="action-links">
-                                    <a href="update_movie.php?id=<?= $row['movie_id'] ?>">แก้ไข</a>
-                                    <a href="action/delete_movie.php?id=<?= $row['movie_id'] ?>" class="btn-delete" onclick="return confirm('ยืนยันการลบภาพยนตร์เรื่องนี้?');">ลบ</a>
-                                </div>
-                            </td>
+                            <th width="8%">รหัส</th>
+                            <th width="10%">รูปปก</th>
+                            <th width="30%">ชื่อเรื่อง</th>
+                            <th width="12%">ปีที่ฉาย</th>
+                            <th width="15%">ความยาว</th>
+                            <th width="13%">หมวดหมู่</th>
+                            <th width="12%">จัดการ</th>
                         </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                            <tr>
+                                <td>#<?= $row['movie_id'] ?></td>
+                                <td>
+                                    <?php if (!empty($row['cover_image'])) { ?>
+                                        <img src="<?= htmlspecialchars($row['cover_image']) ?>" class="movie-poster" alt="Poster" onerror="this.src='https://via.placeholder.com/50x70/1a1a20/888888?text=No+Img';">
+                                    <?php } else { ?>
+                                        <img src="https://via.placeholder.com/50x70/1a1a20/888888?text=No+Img" class="movie-poster" alt="No Cover">
+                                    <?php } ?>
+                                </td>
+                                <td><strong><?= htmlspecialchars($row['title']) ?></strong></td>
+                                <td><?= $row['release_year'] ?></td>
+                                <td><?= $row['duration_min'] ?> นาที</td>
+                                <td>
+                                    <span class="badge">
+                                        <?= htmlspecialchars($row['genre_name'] ?? 'ไม่ระบุ') ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-links">
+                                        <a href="update_movie.php?id=<?= $row['movie_id'] ?>" class="btn-edit">แก้ไข</a>
+                                        <a href="action/delete_movie.php?id=<?= $row['movie_id'] ?>" class="btn-delete" onclick="return confirm('ยืนยันการลบภาพยนตร์เรื่องนี้?');">ลบ</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; Movie Catalog System | จัดทำโดย <span>รุจิรา ผาด่านแก้ว เลขที่ 19 BIT.2/4</span></p>
+    </footer>
 
 </body>
 </html>
